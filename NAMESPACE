@@ -1,0 +1,4 @@
+useDynLib("bootml", .registration = TRUE)
+
+export(lassofit)
+export(factorsparsetest)
