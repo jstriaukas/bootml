@@ -42,7 +42,7 @@ factorsparsetest <- function(x, y, w = NULL, q.levels = c(0.90, 0.95, 0.99),
   }
   rhat <- which.max(storesvd)
   P <- cbind(S$u[,1:rhat], w)
-  Proj <- diag(nobs) - P%*%inv(t(P)%*%P)%*%t(P)
+  Proj <- diag(nobs) - P%*%pracma::inv(t(P)%*%P)%*%t(P)
   
   # apply projection:
   hatU <- Proj%*%x
