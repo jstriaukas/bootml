@@ -88,7 +88,7 @@ lassofit <- function(x, y, q.levels = c(0.90, 0.95, 0.99), p.value = FALSE,
                       pf, maxit, nobs, nvars, vnames)
     fit$call <- this.call
     # hypothesis test:
-    fit$reject <- 2*fit$maxlam > fit$hatlam
+    fit$reject <- 2*fit$maxlam > fit$hatlam 
     if (p.value) {
       if (any(fit$reject)){
         idx <- max(which(fit$reject))
@@ -106,11 +106,13 @@ lassofit <- function(x, y, q.levels = c(0.90, 0.95, 0.99), p.value = FALSE,
           fit.tmp <- fitbootlocal(x, y, esim, qlv.pval.tmp[idx], as.integer(1.0), nb, nlam, flmin, ulam, isd, intr, eps, dfmax, pmax, jd, 
                                   pf, maxit, nobs, nvars, vnames)
           idx <- idx - 1
-          notfound <- (2*fit.tmp$maxlam > fit.tmp$hatlam )
+          notfound <- (2*fit.tmp$maxlam < fit.tmp$hatlam)
+          if (idx == 0)
+            notfound <- FALSE
         }
         idx <- idx + 1
         if (idx != 1){
-          qlv.pval <- as.double(seq(qlv.pval.tmp[idx-1], qlv.pval.tmp[idx], by = 0.001))
+          qlv.pval <- as.double(seq(qlv.pval.tmp[idx], qlv.pval.tmp[idx+1], by = 0.001))
         } else {
           qlv.pval <- as.double(seq(0.0, qlv.pval.tmp[idx], by = 0.001))
         }
