@@ -1,4 +1,4 @@
-fitbootlocal <- function(x, y, esim, qlv, nq, nb, nlam, flmin, ulam, isd, intr, eps, dfmax, pmax, jd, 
+fitbootlocal <- function(x, y, esim, qlv, nq, nb, nlam, flmin, ulam, isd, intr, nf, eps, dfmax, pmax, jd, 
                     pf, maxit, nobs, nvars, vnames) {
     #################################################################################
     # data setup
@@ -12,21 +12,19 @@ fitbootlocal <- function(x, y, esim, qlv, nq, nb, nlam, flmin, ulam, isd, intr, 
                     beta = double(pmax * nlam), ibeta = integer(pmax), nbeta = integer(nlam), 
                     alam = double(nlam), npass = integer(1), jerr = integer(1), 
                     quant = double(nlam * nq), hatlam = double(nq),
-                    PACKAGE = "bootml")# enhat = double(nq * nb)
+                    PACKAGE = "bootml")
     hatlam <- fit$hatlam
     quant <- fit$quant
-    #enhat <- matrix(fit$enhat, nrow = nq, ncol = nb)
-    ulam <- hatlam/(2*nobs)
-    maxlam <- fit$alam[1]
     nlam <-  as.integer(nq)
     nq <- -1
-    nb <- -1
+    ulam <- hatlam/(2*nobs)
+    maxlam <- fit$alam[1]
     fit <- .Fortran("fitnoiseF", as.double(qlv), as.integer(nq), as.matrix(esim), as.integer(nb), as.integer(nobs), as.integer(nvars), 
                     as.matrix(x), y, pf, dfmax, pmax, nlam, flmin, ulam, 
                     eps, isd, intr, maxit, nalam = integer(1), b0 = double(nlam), 
                     beta = double(pmax * nlam), ibeta = integer(pmax), nbeta = integer(nlam), 
                     alam = double(nlam), npass = integer(1), jerr = integer(1), 
-                    quant = double(nlam * nlam), hatlam = double(nlam), enhat = double(nq * nb),
+                    quant = double(nlam * nlam), hatlam = double(nlam),
                     PACKAGE = "bootml")
     
     #################################################################################
@@ -37,6 +35,5 @@ fitbootlocal <- function(x, y, esim, qlv, nq, nb, nlam, flmin, ulam, isd, intr, 
     outlist$hatlam <- hatlam
     outlist$quant <- quant
     outlist$maxlam <- maxlam
-    #outlist$enhat <- enhat
     outlist
 } 

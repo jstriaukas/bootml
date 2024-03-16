@@ -2,15 +2,14 @@
 % Please edit documentation in R/fitboot.R
 \name{lassofit}
 \alias{lassofit}
-\title{Fits effective noise of time series and iid LASSO regressions}
+\title{Fits sg-LASSO regression}
 \usage{
-lassofit(x, y, q.levels = c(0.90, 0.95, 0.99), 
-         numboot = 1000L, nlambda = 100L, method = c("iid","dep"),
-         lambda.factor = ifelse(nobs < nvars, 1e-02, 1e-04), 
-         lambda = NULL, pf = rep(1, nvars),
-         dfmax = nvars + 1, 
-         pmax = min(dfmax * 1.2, nvars), standardize = FALSE, 
-         intercept = FALSE, eps = 1e-08, maxit = 1000000L)
+lassofit(x, y, q.levels = c(0.90, 0.95, 0.99), numboot = 1000L, 
+       nlambda = 100L, method = c("multiplier"), 
+       lambda.factor = ifelse(nobs < nvars, 1e-02, 1e-04), 
+       lambda = NULL, pf = rep(1, nvars), 
+       dfmax = nvars + 1, pmax = min(dfmax * 1.2, nvars), standardize = FALSE, 
+       intercept = FALSE, eps = 1e-08, maxit = 1000000L, peps = 1e-08)
 }
 \arguments{
 \item{x}{T by p data matrix, where T and p respectively denote the sample size and the number of regressors.}
@@ -19,13 +18,11 @@ lassofit(x, y, q.levels = c(0.90, 0.95, 0.99),
 
 \item{q.levels}{quantile levels of effective noise.}
 
-\item{p.value}{whether pvalue should be computed. Default is \code{FALSE}.}
-
 \item{numboot}{bootstrap replications.}
 
 \item{nlambda}{number of \eqn{\lambda}'s to use in the regularization path; used if \code{lambda = NULL}.}
 
-\item{method}{bootstrap method, iid - iid multiplier bootstrap, dep - dependent multiplier bootstrap. default \code{iid}.}
+\item{method}{bootstrap method, default \code{multiplier}.}
 
 \item{lambda.factor}{The factor for getting the minimal \eqn{\lambda} in the \eqn{\lambda} sequence, where \code{min(lambda) = lambda.factor * max(lambda)}. max(lambda) is the smallest value of lambda for which all coefficients are zero. \ifelse{html}{\out{&lambda; <sub>max</sub>}}{\eqn{\lambda_{max}}} is determined for each \eqn{\gamma} tuning parameter separately. The default depends on the relationship between \code{T} (the sample size) and \code{p} (the number of predictors). If \code{T < p}, the default is \code{0.01}. If \code{T > p}, the default is \code{0.0001}, closer to zero. The smaller the value of \code{lambda.factor} is, the denser is the fit for \ifelse{html}{\out{&lambda;<sub>min</sub>}}{\eqn{\lambda_{min}}}. Used only if \code{lambda = NULL}.}
 
@@ -44,15 +41,18 @@ lassofit(x, y, q.levels = c(0.90, 0.95, 0.99),
 \item{eps}{convergence threshold for block coordinate descent. Each inner block coordinate-descent loop continues until the maximum change in the objective after any coefficient update is less than thresh times the null deviance. Defaults value is \code{1e-8}.}
 
 \item{maxit}{maximum number of outer-loop iterations allowed at fixed lambda values. Default is \code{1e6}. If the algorithm does not converge, consider increasing \code{maxit}.}
+
+\item{seed}{set seed for bootstrap.}
 }
 \value{
 lassofit object.
 }
 \description{
-Fits effective noise of time series and iid LASSO regressions.
+Fits sg-LASSO regression model.
+The function fits sg-LASSO regression model for a sequence of \eqn{\lambda} tuning parameter and fixed \eqn{\gamma} tuning parameter. The optimization is based on block coordinate-descent. Optionally, fixed effects are fitted.
 }
 \details{
-Fits effective noise of time series and iid LASSO regressions.
+\ifelse{html}{\out{The sequence of linear regression models implied by &lambda; vector is fit by block coordinate-descent. The objective function is  <br><br> ||y - &iota;&alpha; - x&beta;||<sup>2</sup><sub>T</sub> + 2&lambda;  &Omega;<sub>&gamma;</sub>(&beta;), <br> where &iota;&#8712;R<sup>T</sup>enter> and ||u||<sup>2</sup><sub>T</sub>=&#60;u,u&#62;/T is the empirical inner product. The penalty function &Omega;<sub>&gamma;</sub>(.) is applied on  &beta; coefficients and is <br> <br> &Omega;<sub>&gamma;</sub>(&beta;) = &gamma; |&beta;|<sub>1</sub> + (1-&gamma;)|&beta;|<sub>2,1</sub>, <br> a convex combination of LASSO and group LASSO penalty functions.}}{The sequence of linear regression models implied by \eqn{\lambda} vector is fit by block coordinate-descent. The objective function is \deqn{\|y-\iota\alpha - x\beta\|^2_{T} + 2\lambda \Omega_\gamma(\beta),} where \eqn{\iota\in R^T} and \eqn{\|u\|^2_T = \langle u,u \rangle / T} is the empirical inner product. The penalty function \eqn{\Omega_\gamma(.)} is applied on \eqn{\beta} coefficients and is \deqn{\Omega_\gamma(\beta) = \gamma |\beta|_1 + (1-\gamma)|\beta|_{2,1},} a convex combination of LASSO and group LASSO penalty functions.}
 }
 \examples{
 set.seed(1)

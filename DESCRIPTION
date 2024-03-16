@@ -3,11 +3,14 @@ Type: Package
 Title: Bootstrap for LASSO
 Version: 0.0.1
 Authors@R: c(
-    person("Jonas", "Striaukas",  role = c("cre","aut"), email =  "jonas.striaukas@gmail.com"),
-    person("Jad", "Beyhum",  role = c("aut"),email =  "jad.beyhum@gmail.com"))
+    person("Jonas", "Striaukas",  role = c("cre","aut"), email =  "jonas.striaukas@gmail.com"))
 Maintainer: Jonas Striaukas <jonas.striaukas@gmail.com>
-Description: The 'bootml' package implements bootstrap methods for tuning parameter selection and tuning-free high-dimensional inference. 
+Description: The 'bootml' blah blah
 BugReports: https://github.com/jstriaukas/bootml/issues
 License: GPL (>= 2)
-Depends: Matrix, R (>= 3.5.0)	
-RoxygenNote: 7.2.1
+Depends: Matrix, R (>= 3.5.0)
+Encoding: UTF-8
+RoxygenNote: 7.1.2
+NeedsCompilation: yes
+Packaged: 2023-05-22 10:33:36 UTC; Utilisateur
+Author: Jonas Striaukas [cre, aut]

@@ -3,7 +3,7 @@
 ! ------------------------------------------------------------------
 SUBROUTINE fitnoiseF(qlev, nquant, esim, numboot, nobs, nvars, x, y, pf, dfmax, pmax, &
 & nlam, flmin, ulam, eps, isd, intr, maxit, nalam, b0, beta, ibeta, nbeta, &
-& alam, npass, jerr, quant, hatlam) !enhat
+& alam, npass, jerr, quant, hatlam)
 
   IMPLICIT NONE
   ! -------- INPUT VARIABLES -------- !
@@ -18,7 +18,6 @@ SUBROUTINE fitnoiseF(qlev, nquant, esim, numboot, nobs, nvars, x, y, pf, dfmax, 
   DOUBLE PRECISION :: ulam(nlam), alam(nlam)
   DOUBLE PRECISION :: qlev(nquant), quant(nlam, nquant) ! ---  quantiles
   DOUBLE PRECISION :: hatlam(nquant) ! --- \hat{lambda}
-  !DOUBLE PRECISION :: enhat(nquant,numboot)  ! --- distribution of effective noise
   ! -------- LOCAL DECLARATIONS -------- !
   INTEGER :: j, l, nk, ierr
   INTEGER, DIMENSION(:), ALLOCATABLE :: ju
@@ -55,7 +54,7 @@ SUBROUTINE fitnoiseF(qlev, nquant, esim, numboot, nobs, nvars, x, y, pf, dfmax, 
 ! -------------------- CALL lassofitpathF --------------------- !
 CALL lassofitpathqF(qlev, nquant, esim, numboot, maj, nobs, nvars, x, y, ju, pf, dfmax, &
  & pmax, nlam, flmin, ulam, eps, maxit, nalam, b0, beta, ibeta, nbeta, alam, &
-  & npass, jerr, intr, quant, hatlam) !enhat
+  & npass, jerr, intr, quant, hatlam)
 
   IF (jerr > 0) RETURN ! CHECK ERROR AFTER CALLING FUNCTION
   ! ----------- TRANSFORM BETA BACK TO THE ORIGINAL SCALE ----------- !
@@ -78,7 +77,7 @@ END SUBROUTINE fitnoiseF
 ! --------------------------------- lassofitpathqF --------------------------------- !
 SUBROUTINE lassofitpathqF(qlev, nquant, esim, numboot, maj, nobs, nvars, x, y, ju, pf, dfmax, &
 & pmax, nlam, flmin, ulam, eps, maxit, nalam, b0, beta, m, nbeta, alam, &
-& npass, jerr, intr, quant, hatlam)!enhat
+& npass, jerr, intr, quant, hatlam)
     ! xlo, xhi, nmiss
     IMPLICIT NONE
     ! -------- INPUT VARIABLES -------- !
@@ -92,7 +91,6 @@ SUBROUTINE lassofitpathqF(qlev, nquant, esim, numboot, maj, nobs, nvars, x, y, j
     DOUBLE PRECISION :: ulam(nlam), alam(nlam)
     DOUBLE PRECISION :: qlev(nquant), quant(nlam,nquant) ! --- quantile levels and quantiles
     DOUBLE PRECISION :: hatlam(nquant) ! --- \hat{lambda}
-    !DOUBLE PRECISION :: enhat(nquant,numboot) ! --- distribution of effective noise
     ! -------- LOCAL DECLARATIONS -------- !
     INTEGER,  PARAMETER :: mnlam = 6
     DOUBLE PRECISION :: tmp, d, dif, oldb, u, v, al, flmin,  nobsd, tmpb
@@ -132,7 +130,6 @@ SUBROUTINE lassofitpathqF(qlev, nquant, esim, numboot, maj, nobs, nvars, x, y, j
     quant = 0.0D0
     hatlam = -1.0D0
     t = 0
-    !enhat = 0.0D0
     ! ----------------- LAMBDA LOOP (OUTMOST LOOP) ------------------- !
     DO l = 1, nlam
         al = ulam(l)
@@ -247,22 +244,24 @@ SUBROUTINE lassofitpathqF(qlev, nquant, esim, numboot, maj, nobs, nvars, x, y, j
                 en(l, ib) = tmpb
             END DO
             CALL QUANTILE(en(l,:), qlev, nquant, numboot, quant(l,:))
+            IF (l .EQ. 1) THEN
+                hatlam = quant(1,:)
+            END IF
             DO ib = 1, nquant
                 IF (quant(l,ib) >= 2*ulam(l)) THEN
                     IF (hatlam(ib) .EQ. -1.0D0) THEN
-                        IF (l .EQ. 1) THEN
-                            hatlam(ib) = quant(1,ib)
-                            !enhat(ib,:) = en(1,:)
-                        ELSE
-                            hatlam(ib) = quant(l,ib)
-                            !enhat(ib,:) = en(l,:)
-                        END IF
+                        hatlam(ib) = quant(l-1,ib)
                         t = t + 1
-                        IF (t .EQ. nquant) EXIT
                     END IF
                 END IF
             END DO
+            IF (t .EQ. nquant) THEN
+                IF (l .EQ. 1) THEN
+                    hatlam = quant(1,:)
+                END IF
+            END IF
         END IF
+        IF (t .EQ. nquant) EXIT
         ! ----------- FINAL UPDATE & SAVE RESULTS ------------ !
         IF (ni > pmax) THEN
             jerr = - 10000 - l
@@ -277,7 +276,6 @@ SUBROUTINE lassofitpathqF(qlev, nquant, esim, numboot, maj, nobs, nvars, x, y, j
         IF (flmin >= 1.0D0) CYCLE
         me = COUNT(ABS(beta(1:ni,l)) > 0.0D0)
         IF (me > dfmax) EXIT
-        IF (t .EQ. nquant) EXIT
     END DO ! -------> END LAMBDA LOOP
     DEALLOCATE(b,oldbeta,r,mm,rhat,xrhat,en)
     RETURN
