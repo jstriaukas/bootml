@@ -80,10 +80,10 @@ lassofit <- function(x, y, q.levels = c(0.90, 0.95, 0.99), numboot = 1000L, nlam
     # bootstrap setup
     qlv <- as.double(q.levels)
     nq <- as.integer(length(q.levels))
-    # if (is.null(seed))
-    #   warning('seed has been set to seed=2023')
-    #   seed <- 2023
-    # set.seed(seed)
+    if (is.null(seed))
+      warning('seed has been set to seed=2023')
+      seed <- 2023
+    set.seed(seed)
     esim <- matrix(rnorm(nobs*nb), nrow = nobs, ncol = nb)
     #################################################################################
     fit <- fitbootlocal(x, y, esim, qlv, nq, nb, nlam, flmin, ulam, isd, intr, nf, eps, dfmax, pmax, jd, 
@@ -104,7 +104,7 @@ lassofit <- function(x, y, q.levels = c(0.90, 0.95, 0.99), numboot = 1000L, nlam
       idx <- idx[fit$quant[idx] <  fit$hatlam[i] ]
       fit$quant[idx] <- 0.0
     }
-    #fit$seed <- seed
+    fit$seed <- seed
     #################################################################################
     class(fit) <- "fitboot"
     fit

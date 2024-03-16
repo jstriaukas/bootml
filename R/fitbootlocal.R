@@ -17,7 +17,7 @@ fitbootlocal <- function(x, y, esim, qlv, nq, nb, nlam, flmin, ulam, isd, intr, 
     quant <- fit$quant
     nlam <-  as.integer(nq)
     nq <- -1
-    ulam <- hatlam/(2*nobs)
+    ulam <- hatlam
     maxlam <- fit$alam[1]
     fit <- .Fortran("fitnoiseF", as.double(qlv), as.integer(nq), as.matrix(esim), as.integer(nb), as.integer(nobs), as.integer(nvars), 
                     as.matrix(x), y, pf, dfmax, pmax, nlam, flmin, ulam, 

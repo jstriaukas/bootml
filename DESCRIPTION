@@ -12,5 +12,5 @@ Depends: Matrix, R (>= 3.5.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.2
 NeedsCompilation: yes
-Packaged: 2023-05-22 10:33:36 UTC; Utilisateur
+Packaged: 2023-05-22 09:33:19 UTC; Utilisateur
 Author: Jonas Striaukas [cre, aut]
